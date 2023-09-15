@@ -1,6 +1,7 @@
 from evoman.environment import Environment
 from evoman.controller import Controller
 from controllers.neat_controller import NeatController
+from controllers.neat_controller_with_memory import NeatMemoryController
 import neat
 import os
 
@@ -16,7 +17,8 @@ def evaluate_genomes(genomes: list, config: neat.Config):
         environment = Environment(
             logs="off",
             savelogs="no",
-            multiplemode="no"
+            multiplemode="no",
+            player_controller=controller
         )
         result = simulation(environment=environment, controller=controller)
         genome.fitness = result['fitness']
@@ -31,8 +33,8 @@ def run_neat(config: neat.Config):
         filename_prefix="neat_experiment/checkpoints/development_runs/neat-checkpoint-"
     ))
 
-    best_genome = population.run(fitness_function=evaluate_genomes, n=20)
-
+    best_genome = population.run(fitness_function=evaluate_genomes, n=100)
+    print("complete")
 
 if __name__ == "__main__":
     configuration_file_name = "basic-config.txt"
