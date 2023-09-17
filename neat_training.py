@@ -4,6 +4,7 @@ from controllers.neat_controller import NeatController
 from controllers.neat_controller_with_memory import NeatMemoryController
 import neat
 import os
+import pickle
 
 
 def simulation(environment: Environment, controller: Controller) -> dict:
@@ -24,7 +25,7 @@ def evaluate_genomes(genomes: list, config: neat.Config):
         genome.fitness = result['fitness']
 
 
-def run_neat(config: neat.Config):
+def run_neat(config: neat.Config, save_path: str):
     population = neat.Population(config=config)
     population.add_reporter(reporter=neat.StdOutReporter(True))
     population.add_reporter(reporter=neat.StatisticsReporter())
@@ -33,8 +34,13 @@ def run_neat(config: neat.Config):
         filename_prefix="neat_experiment/checkpoints/development_runs/neat-checkpoint-"
     ))
 
-    best_genome = population.run(fitness_function=evaluate_genomes, n=100)
-    print("complete")
+    best_genome = population.run(fitness_function=evaluate_genomes, n=10)
+    if not save_path:
+        save_path = os.path.join(os.path.dirname(__file__), "best-genome.pkl")
+    with open(save_path, "wb") as save_file:
+        pickle.dump(best_genome, save_file)
+        print(f"Succesfully saved best genome to {save_path}")
+
 
 if __name__ == "__main__":
     configuration_file_name = "basic-config.txt"
@@ -46,5 +52,5 @@ if __name__ == "__main__":
                          species_set_type=neat.DefaultSpeciesSet,
                          stagnation_type=neat.DefaultStagnation,
                          filename=config_path)
-    run_neat(config=config)
+    run_neat(config=config, save_path="neat_experiment/best_specialist_genomes/enemy_1/test_run_1.pkl")
 
