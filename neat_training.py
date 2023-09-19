@@ -14,7 +14,7 @@ def simulation(environment: Environment, controller: Controller) -> dict:
     return {"fitness": f, "hp_player": p, "hp_enemy": e, "game_time": t}
 
 
-def evaluate_genomes(genomes: list, config: neat.Config):
+def evaluate_genomes(genomes: list, config: neat.Config, enemies: list[int]):
     for genome_id, genome in genomes:
         ## UNCOMMENT THE CONTROLLER YOU WOULD LIKE TO USE
         # controller = NeatController(genome=genome, config=config)
@@ -45,6 +45,18 @@ def run_neat(config: neat.Config, save_path: str):
     with open(save_path, "wb") as save_file:
         pickle.dump(best_genome, save_file)
         print(f"Succesfully saved best genome to {save_path}")
+
+
+def run_multiple_experiments(config: neat.Config, genome_save_name: str, enemies: list[int], n_experiments: int):
+    directory_name = f"/neat_experiment/best_specialist_genomes/enemy_{enemies[0]}"
+    if not os.path.isdir(directory_name):
+        os.mkdir(directory_name)
+
+    for experiment in range(n_experiments):
+        print(f"Running experiment {experiment+1}/{n_experiments}")
+        save_path = os.path.join(directory_name, f"{genome_save_name}_{experiment+1}")
+        run_neat(config=config, save_path=save_path)
+
 
 
 if __name__ == "__main__":
