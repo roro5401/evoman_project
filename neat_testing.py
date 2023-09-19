@@ -2,6 +2,7 @@ import os
 import pickle
 import neat
 from controllers.neat_controller import NeatController
+from controllers.neat_controller_with_memory import NeatMemoryController
 from evoman.environment import Environment
 from evoman.controller import Controller
 
@@ -32,7 +33,8 @@ def test_controller(
                 logs="off",
                 savelogs="no",
                 multiplemode="no",
-                player_controller=controller
+                player_controller=controller,
+                enemies=[enemy]
             )
             result_run = one_simulation(environment=environment, controller=controller)
             print(f"Succesfully completed run {simulation} for enemy {enemy}. Statistics:"
@@ -60,7 +62,7 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
     result = {}
     for genome_file in os.listdir(folder_path):
         genome = load_genome(load_path=os.path.join(folder_path, genome_file))
-        neat_controller = NeatController(genome=genome, config=config)
+        neat_controller = NeatMemoryController(genome=genome, config=config)
         controller_result = test_controller(
             enemies=enemies, controller=neat_controller, n_simulations=n_simulations
         )
@@ -70,9 +72,9 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
 
 if __name__ == "__main__":
     result = test_folder_of_neat_controllers(
-        folder_path="neat_experiment/best_specialist_genomes/enemy_1",
-        enemies=[1],
+        folder_path="neat_experiment/best_specialist_genomes/enemy_5",
+        enemies=[5],
         n_simulations=10,
-        config_file="basic-config.txt"
+        config_file="basic-config-memory.txt"
     )
     print(result)
