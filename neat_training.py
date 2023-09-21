@@ -8,7 +8,7 @@ import pickle
 
 global total_generations
 global enemies
-total_generations = 100
+total_generations = 5
 enemies = [5]
 
 def simulation(environment: Environment, controller: Controller) -> dict:
@@ -28,6 +28,7 @@ def evaluate_genomes(genomes: list, config: neat.Config):
             player_controller=controller,
             enemies=enemies
         )
+
         result = simulation(environment=environment, controller=controller)
         genome.fitness = result['fitness']
 
@@ -67,10 +68,18 @@ if __name__ == "__main__":
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, "neat_experiment/configurations", configuration_file_name)
 
+    base_path = "neat_experiment/best_specialist_genomes"
+    # Construct the full directory path
+    directory_path = os.path.join(base_path, f"enemy_{enemies[0]}")
+
+    # Check if the directory already exists
+    if not os.path.exists(directory_path):
+        # If it doesn't exist, create the directory
+        os.mkdir(directory_path)
     config = neat.Config(genome_type=neat.DefaultGenome,
                          reproduction_type=neat.DefaultReproduction,
                          species_set_type=neat.DefaultSpeciesSet,
                          stagnation_type=neat.DefaultStagnation,
                          filename=config_path)
-    run_neat(config=config, save_path="neat_experiment/best_specialist_genomes/enemy_5/test_run_new_config_no_mem.pkl")
+    run_neat(config=config, save_path=f"{directory_path}/test_run_new_config_no_mem.pkl")
 
