@@ -13,4 +13,10 @@ def print_hi(name):
 if __name__ == '__main__':
     print_hi('PyCharm')
 
+import pickle
+
+with open('/Users/wiegerschuurman/Documents/GitHub/evoman_project/neat_experiment/best_specialist_genomes/enemy_4/test_run_new_config_no_mem.pkl', 'rb') as file:
+    data = pickle.load(file)
+print(data)
+
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

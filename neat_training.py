@@ -8,8 +8,8 @@ import pickle
 
 global total_generations
 global enemies
-total_generations = 5
-enemies = [5]
+total_generations = 40
+enemies = [4]
 
 def simulation(environment: Environment, controller: Controller) -> dict:
     f, p, e, t = environment.play(pcont=controller)
@@ -28,7 +28,6 @@ def evaluate_genomes(genomes: list, config: neat.Config):
             player_controller=controller,
             enemies=enemies
         )
-
         result = simulation(environment=environment, controller=controller)
         genome.fitness = result['fitness']
 
