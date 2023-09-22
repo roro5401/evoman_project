@@ -1,10 +1,20 @@
 import os
 import pickle
 import neat
+import csv
 from controllers.neat_controller import NeatController
 from controllers.neat_controller_with_memory import NeatMemoryController
 from evoman.environment import Environment
 from evoman.controller import Controller
+
+
+def save_result_specialist(result: dict, controller_type: str, enemy: int, csv_name: str):
+    with open(f"neat_experiment/results/enemy_{enemy}/testing_results/{controller_type}/{csv_name}.csv", "w+") as result_file:
+        writer = csv.writer(result_file)
+        writer.writerow(["controller_name", "average_gain"])
+        for genome, result in result.items():
+            average_gain = result[enemy]
+            writer.writerow([genome, average_gain])
 
 
 def load_genome(load_path: str) -> neat.DefaultGenome:
@@ -23,35 +33,29 @@ def test_controller(
         controller: Controller,
         n_simulations: int
 ) -> dict:
-    result = {}
+    gain_per_enemy = {enemy: [] for enemy in enemies}
 
     for enemy in enemies:
         print(f"Start simulating against enemy {enemy}...")
-        result_enemy = {"fitness": [], "hp_player": [], "hp_enemy": [], "game_time": []}
         for simulation in range(n_simulations):
             environment = Environment(
                 logs="off",
                 savelogs="no",
                 multiplemode="no",
                 player_controller=controller,
-                enemies=[enemy]
+                enemies=[enemy],
             )
             result_run = one_simulation(environment=environment, controller=controller)
-            print(f"Succesfully completed run {simulation} for enemy {enemy}. Statistics:"
-                  f"\n---------------------------------------------------------")
-            for key, value in result_run.items():
-                result_enemy[key].append(value)
-                print(f"{key}: {value}\n")
-        result[enemy] = result_enemy
-        print(
-            f"Finished simulating against enemy {enemy}. All statistics: {result[enemy]}"
-        )
+            gain = result_run['hp_player']-result_run['hp_enemy']
+            gain_per_enemy[enemy].append(gain)
+            print(f"Succesfully completed run {simulation} for enemy {enemy}. Gain: {gain}")
 
-    return result
+    return {enemy: sum(gain)/len(gain) for enemy, gain in gain_per_enemy.items()}
 
 
 def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file: str,
-                                    n_simulations: int = 5) -> dict:
+                                    controller_type: str,
+                                    n_simulations: int = 5,) -> dict:
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, "neat_experiment/configurations", config_file)
     config = neat.Config(genome_type=neat.DefaultGenome,
@@ -61,8 +65,17 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
                          filename=config_path)
     result = {}
     for genome_file in os.listdir(folder_path):
+        print(f"\nTesting for genome {genome_file} started...\n"
+              f"---------------------------------------------------------")
         genome = load_genome(load_path=os.path.join(folder_path, genome_file))
-        neat_controller = NeatMemoryController(genome=genome, config=config)
+        if controller_type == "normal_controller":
+            neat_controller = NeatController(genome=genome, config=config)
+        elif controller_type == "memory_controller":
+            neat_controller = NeatMemoryController(genome=genome, config=config)
+        else:
+            raise ValueError(f"Controller type must be  'normal_controller' or "
+                             f"'memory_controller'. You provided {controller_type}.")
+
         controller_result = test_controller(
             enemies=enemies, controller=neat_controller, n_simulations=n_simulations
         )
@@ -71,10 +84,13 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
 
 
 if __name__ == "__main__":
+    enemies=[1]
+    controller_type = "memory_controller"
     result = test_folder_of_neat_controllers(
-        folder_path="neat_experiment/best_specialist_genomes/enemy_5",
-        enemies=[5],
-        n_simulations=10,
-        config_file="basic-config-memory.txt"
+        folder_path=f"neat_experiment/best_specialist_genomes/enemy_1/{controller_type}",
+        enemies=enemies,
+        n_simulations=5,
+        config_file="basic-config-memory.txt",
+        controller_type=controller_type
     )
-    print(result)
+    save_result_specialist(result=result, controller_type=controller_type, enemy=enemies[0], csv_name="test")
