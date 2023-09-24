@@ -86,7 +86,7 @@ def run_multiple_experiments(
 
 
 if __name__ == "__main__":
-    configuration_file_name = "basic-config-memory.txt"
+    configuration_file_name = "basic-config.txt"
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, "neat_experiment/configurations",
                                configuration_file_name)
@@ -96,11 +96,18 @@ if __name__ == "__main__":
                          species_set_type=neat.DefaultSpeciesSet,
                          stagnation_type=neat.DefaultStagnation,
                          filename=config_path)
-
-    controller_type = "memory_controller"
-    genome_save_name = "genome"
-    run_save_name = "run"
-    total_generations = 20
-    enemies = [1]
-    run_multiple_experiments(config=config, enemies=enemies, genome_save_name=genome_save_name,
-                             n_experiments=5, run_save_name=run_save_name, controller_type=controller_type)
+    enemy_list = [4]
+    for enemy in enemy_list:
+        controller_type = "normal_controller"
+        genome_save_name = "extra_genome"
+        run_save_name = "extra_run"
+        total_generations = 50
+        enemies = [enemy]
+        run_multiple_experiments(
+            config=config,
+            enemies=enemies,
+            genome_save_name=genome_save_name,
+            n_experiments=5,
+            run_save_name=run_save_name,
+            controller_type=controller_type
+        )
