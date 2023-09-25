@@ -86,28 +86,32 @@ def run_multiple_experiments(
 
 
 if __name__ == "__main__":
-    configuration_file_name = "basic-config.txt"
-    local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, "neat_experiment/configurations",
-                               configuration_file_name)
+    enemy_list = [8]
+    controllers = ["normal_controller", "memory_controller"]
+    for controller_type in controllers:
+        for enemy in enemy_list:
+            if controller_type == "normal_controller":
+                configuration_file_name = "basic-config.txt"
+            else:
+                configuration_file_name = "basic-config-memory.txt"
+            local_dir = os.path.dirname(__file__)
+            config_path = os.path.join(local_dir, "neat_experiment/configurations",
+                                       configuration_file_name)
 
-    config = neat.Config(genome_type=neat.DefaultGenome,
-                         reproduction_type=neat.DefaultReproduction,
-                         species_set_type=neat.DefaultSpeciesSet,
-                         stagnation_type=neat.DefaultStagnation,
-                         filename=config_path)
-    enemy_list = [4]
-    for enemy in enemy_list:
-        controller_type = "normal_controller"
-        genome_save_name = "extra_genome"
-        run_save_name = "extra_run"
-        total_generations = 50
-        enemies = [enemy]
-        run_multiple_experiments(
-            config=config,
-            enemies=enemies,
-            genome_save_name=genome_save_name,
-            n_experiments=5,
-            run_save_name=run_save_name,
-            controller_type=controller_type
-        )
+            config = neat.Config(genome_type=neat.DefaultGenome,
+                                 reproduction_type=neat.DefaultReproduction,
+                                 species_set_type=neat.DefaultSpeciesSet,
+                                 stagnation_type=neat.DefaultStagnation,
+                                 filename=config_path)
+            genome_save_name = "extra_genome"
+            run_save_name = "extra_run"
+            total_generations = 50
+            enemies = [enemy]
+            run_multiple_experiments(
+                config=config,
+                enemies=enemies,
+                genome_save_name=genome_save_name,
+                n_experiments=10,
+                run_save_name=run_save_name,
+                controller_type=controller_type
+            )
