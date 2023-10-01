@@ -57,25 +57,3 @@ for enemy in enemies:
         print(f"{key}: {value}")
 
     print("\n")
-    #
-    # print("Testing for H_0: mean_normal = mean_memory, H_a: mean_memory > mean_normal with significance level 0.05")
-    # result_memory = one_tailed_sample_t_test(mean_1=memory_controller_mean,
-    #                                   var_1=memory_controller_var, n_1=n_memory,
-    #                                   mean_2=normal_controller_mean,
-    #                                   var_2=normal_controller_var, n_2=n_normal,
-    #                                   p_value=0.05)
-    # if result_memory["reject_null"]:
-    #     print(
-    #         "Rejected null hypothesis in favor of alternative hypothesis. Evidence "
-    #         "the memory controller performs better on average.")
-    # else:
-    #     print(
-    #         "Could not reject null hypothesis, no evidence memory controller performs better."
-    #     )
-    #
-    # for key, value in result_memory.items():
-    #     print(f"{key}: {value}")
-    #
-    # print("\n")
-
-
