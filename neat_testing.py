@@ -9,7 +9,8 @@ from evoman.controller import Controller
 
 
 def save_result_specialist(result: dict, controller_type: str, enemy: int, csv_name: str):
-    with open(f"neat_experiment/results/enemy_{enemy}/testing_results/{controller_type}/{csv_name}.csv", "w+") as result_file:
+    print("Saving...")
+    with open(f"neat_experiment/results/enemy_{enemy}/testing_results/{controller_type}/{csv_name}.csv", "w+", newline='') as result_file:
         writer = csv.writer(result_file)
         writer.writerow(["controller_name", "average_gain"])
         for genome, result in result.items():
@@ -44,6 +45,8 @@ def test_controller(
                 multiplemode="no",
                 player_controller=controller,
                 enemies=[enemy],
+                visuals=True,
+                speed="normal"
             )
             result_run = one_simulation(environment=environment, controller=controller)
             gain = result_run['hp_player']-result_run['hp_enemy']
@@ -65,6 +68,8 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
                          filename=config_path)
     result = {}
     for genome_file in os.listdir(folder_path):
+        if not genome_file.endswith(".pkl"):
+            continue
         print(f"\nTesting for genome {genome_file} started...\n"
               f"---------------------------------------------------------")
         genome = load_genome(load_path=os.path.join(folder_path, genome_file))
@@ -84,13 +89,18 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
 
 
 if __name__ == "__main__":
-    enemies=[1]
-    controller_type = "memory_controller"
-    result = test_folder_of_neat_controllers(
-        folder_path=f"neat_experiment/best_specialist_genomes/enemy_1/{controller_type}",
-        enemies=enemies,
-        n_simulations=5,
-        config_file="basic-config-memory.txt",
-        controller_type=controller_type
-    )
-    save_result_specialist(result=result, controller_type=controller_type, enemy=enemies[0], csv_name="test")
+    for enemy in [6]:
+        for controller_type in ["memory_controller", "normal_controller"]:
+            if controller_type == "normal_controller":
+                config_file = "basic-config.txt"
+            else:
+                config_file = "basic-config-memory.txt"
+            enemies=[enemy]
+            result = test_folder_of_neat_controllers(
+                folder_path=f"neat_experiment/best_specialist_genomes/enemy_{enemy}/{controller_type}",
+                enemies=enemies,
+                n_simulations=5,
+                config_file=config_file,
+                controller_type=controller_type
+            )
+            save_result_specialist(result=result, controller_type=controller_type, enemy=enemies[0], csv_name="test")
