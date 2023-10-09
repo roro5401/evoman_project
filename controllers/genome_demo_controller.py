@@ -17,7 +17,7 @@ class GenomeDemoController():
             self.weights_and_biases = weights_and_biases
 
         if sigma_stepsizes is None:
-            self.sigma_stepsizes = [np.random.normal(loc=0.0, scale=1, size=1) for sigma
+            self.sigma_stepsizes = [np.random.uniform(low=0, high=1) for sigma
                                     in range(0, n_vars)]
         else:
             self.sigma_stepsizes = sigma_stepsizes
