@@ -7,13 +7,16 @@ from evoman.environment import Environment
 from evoman.controller import Controller
 
 
-def save_result_generalist(result: dict, group_number: str, enemy: int, csv_name: str):
+def save_result_generalist(results: dict, group_number: str, csv_name: str, enemies: list):
     with open(f"neat_experiment/results/generalist/testing_results/{group_number}/{csv_name}.csv", "w+") as result_file:
         writer = csv.writer(result_file)
-        writer.writerow(["controller_name", "average_gain"])
-        for genome, result in result.items():
-            average_gain = result[enemy]
-            writer.writerow([genome, average_gain])
+        headers = ["controller_name"]+ [f"enemy_{enemy}" for enemy in enemies]
+        writer.writerow(headers)
+        for genome, result in results.items():
+            results_genome = []
+            for enemy in enemies:
+                results_genome.append(result[enemy])
+            writer.writerow([genome] + results_genome)
 
 
 def load_genome(load_path: str) -> neat.DefaultGenome:
@@ -85,4 +88,4 @@ if __name__ == "__main__":
         n_simulations=5,
         config_file="basic-config.txt",
     )
-    save_result_generalist(result=result, enemy=enemies, csv_name="test")
+    save_result_generalist(result=result, group_number=1, csv_name="test", enemies=enemies)
