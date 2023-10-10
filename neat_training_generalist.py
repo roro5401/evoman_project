@@ -100,11 +100,11 @@ if __name__ == "__main__":
                          filename=config_path)
     genome_save_name = "genome"
     run_save_name = "run"
-    total_generations = 2
+    total_generations = 50
     run_multiple_experiments(
         config=config,
         group_number=1,
         genome_save_name=genome_save_name,
-        n_experiments=10,
+        n_experiments=1,
         run_save_name=run_save_name,
     )
