@@ -17,7 +17,7 @@ class GenomeDemoController():
             self.weights_and_biases = weights_and_biases
 
         if sigma_stepsizes is None:
-            self.sigma_stepsizes = [np.random.normal(loc=0.0, scale=1, size=1) for sigma
+            self.sigma_stepsizes = [np.random.uniform(low=1, high=3) for sigma
                                     in range(0, n_vars)]
         else:
             self.sigma_stepsizes = sigma_stepsizes
@@ -27,9 +27,9 @@ class GenomeDemoController():
 
     # this function updates the controller with the new weights and then returns it
     def get_controller(self):
-        controller = player_controller(_n_hidden=1)
-        controller.set(controller=self.weights_and_biases, n_inputs=20)
-        return controller
+        # controller = player_controller(_n_hidden=1)
+        # controller.set(controller=self.weights_and_biases, n_inputs=20)
+        return np.array(self.weights_and_biases)
 
 
     def get_genome_information(self) -> dict:
@@ -41,8 +41,16 @@ class GenomeDemoController():
         return self.weights_and_biases
 
 
+    def set_weights_and_bias(self, weights_and_bias: list):
+        self.weights_and_biases = weights_and_bias
+
+
     def get_sigma_stepsizes(self) -> list:
         return self.sigma_stepsizes
+
+
+    def set_sigma_stepzies(self, sigma_stepsizes: list):
+        self.sigma_stepsizes = sigma_stepsizes
 
 
     def get_fitness(self) -> float:

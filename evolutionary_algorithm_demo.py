@@ -6,7 +6,6 @@ import math
 import numpy as np
 
 
-""""Function should return new list of sigma_stepsizes"""
 def update_sigma_stepsize(sigma_stepsizes: list) -> list:
     boundary = 0.01
     new_sigma_stepsizes = []
@@ -23,9 +22,8 @@ def update_sigma_stepsize(sigma_stepsizes: list) -> list:
     return new_sigma_stepsizes
 
 
-"""Function should return dict like below"""
-def uncorrelated_mutation(genome: GenomeDemoController) -> dict:
-    genome_info = GenomeDemoController.get_genome_information()
+def uncorrelated_mutation(genome: GenomeDemoController):
+    genome_info = genome.get_genome_information()
     weights_and_bias = genome_info["weights_and_bias"]
     sigma_stepsizes = genome_info["sigma_stepsizes"]
 
@@ -38,7 +36,9 @@ def uncorrelated_mutation(genome: GenomeDemoController) -> dict:
         new_weight = weights_and_bias[i] + new_sigma_stepsizes[i]*np.random.normal(0,1,1)
         new_weights_and_biases.append(new_weight)
 
-    return {"weights_and_biases": new_weights_and_biases, "sigma_stepsizes": new_sigma_stepsizes}
+    genome.set_sigma_stepzies(sigma_stepsizes=sigma_stepsizes)
+    genome.set_weights_and_bias(weights_and_bias=weights_and_bias)
+
 
 
 def simple_arithmetic_recombination(genome_1: GenomeDemoController, genome_2: GenomeDemoController) -> (GenomeDemoController, GenomeDemoController):
@@ -58,7 +58,28 @@ def simple_arithmetic_recombination(genome_1: GenomeDemoController, genome_2: Ge
     return newgenome_1, newgenome_2
 
 
-def mating_tournament_selection(population: list[GenomeDemoController], lambda_value, k) -> list[GenomeDemoController]:
+def create_offspring(mating_pool: list[GenomeDemoController], p_recombination: float, p_mutation: float) -> list[GenomeDemoController]:
+    random.shuffle(mating_pool)
+    offspring = []
+    for j in range(0, len(mating_pool), 2):
+        parent_1 = mating_pool[j]
+        parent_2 = mating_pool[j+1]
+        if random.uniform(0, 1) < p_recombination:
+            offspring_1, offspring_2 = simple_arithmetic_recombination()
+        else:
+            offspring_1 = copy.deepcopy(parent_1)
+            offspring_2 = copy.deepcopy(parent_2)
+
+        if random.uniform(0,1) < p_mutation:
+            uncorrelated_mutation(genome=offspring_1)
+        if random.uniform(0, 1) < p_mutation:
+            uncorrelated_mutation(genome=offspring_2)
+        offspring.extend([offspring_1, offspring_2])
+
+    return offspring
+
+
+def mating_tournament_selection(population: list[GenomeDemoController], lambda_value: int, k: int) -> list[GenomeDemoController]:
     mating_pool = []  # Initialize the mating pool
 
     current_member = 1
@@ -80,8 +101,9 @@ def mating_tournament_selection(population: list[GenomeDemoController], lambda_v
 
 def survivor_selection(population: list[GenomeDemoController], mu: int, percentage_top_half: float) -> list[GenomeDemoController]:
     population.sort(key=lambda x: x.fitness, reverse=True)
+    best_genome = population.pop(0)
     best_half = population[:len(population)//2]
     worst_half = population[len(population)//2:]
     n_selected_best_half = round(mu * percentage_top_half)
     n_selected_worst_half = len(population) - n_selected_best_half
-    return random.sample(population=best_half, k=n_selected_best_half) + random.sample(population=worst_half, k=n_selected_worst_half)
+    return [best_genome] + random.sample(population=best_half, k=n_selected_best_half) + random.sample(population=worst_half, k=n_selected_worst_half)
