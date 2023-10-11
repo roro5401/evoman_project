@@ -58,8 +58,24 @@ def simple_arithmetic_recombination(genome_1: GenomeDemoController, genome_2: Ge
     return newgenome_1, newgenome_2
 
 
-def mating_tournament_selection(population: list[GenomeDemoController]) -> list[GenomeDemoController]:
-    return
+def mating_tournament_selection(population: list[GenomeDemoController], lambda_value, k) -> list[GenomeDemoController]:
+    mating_pool = []  # Initialize the mating pool
+
+    current_member = 1
+
+    while current_member <= lambda_value:
+        # Pick k individuals randomly from the population
+        tournament = random.sample(population, k)
+
+        # Compare and select the best individual based on your criteria
+        best_individual = max(tournament)
+
+        # Add the best individual to the mating pool
+        mating_pool.append(best_individual)
+
+        current_member += 1
+
+    return mating_pool
 
 
 def survivor_selection(population: list[GenomeDemoController], mu: int, percentage_top_half: float) -> list[GenomeDemoController]:
