@@ -1,14 +1,18 @@
 from controllers.demo_controller import player_controller
 import numpy as np
 from typing import Optional
+import functools
 
 
+@functools.total_ordering
 class GenomeDemoController():
 
-    def __init__(self, weights_and_biases: Optional[list], sigma_stepsizes: Optional[list], n_vars = 265):
+    def __init__(self, weights_and_biases: Optional[list] = None,
+                 sigma_stepsizes: Optional[list] = None, n_vars=265):
         # initialize information for genome from, weights and biases
         if weights_and_biases is None:
-            self.weights_and_biases = [np.random.uniform(low=-1, high=1) for gene in range(0, n_vars)]
+            self.weights_and_biases = [np.random.uniform(low=-1, high=1) for gene in
+                                       range(0, n_vars)]
         else:
             self.weights_and_biases = weights_and_biases
 
@@ -17,6 +21,8 @@ class GenomeDemoController():
                                     in range(0, n_vars)]
         else:
             self.sigma_stepsizes = sigma_stepsizes
+
+        self.fitness = None
 
 
     # this function updates the controller with the new weights and then returns it
@@ -37,3 +43,19 @@ class GenomeDemoController():
 
     def get_sigma_stepsizes(self) -> list:
         return self.sigma_stepsizes
+
+
+    def get_fitness(self) -> float:
+        return self.fitness
+
+
+    def set_fitness(self, fitness: float):
+        self.fitness = fitness
+
+
+    def __eq__(self, other) -> bool:
+        return self.fitness == other.fitness
+
+
+    def __gt__(self, other) -> bool:
+        return self.fitness > other.fitness
