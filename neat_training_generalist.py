@@ -28,7 +28,7 @@ def evaluate_genomes(genomes: list, config: neat.Config):
             savelogs="no",
             multiplemode="yes",
             player_controller=controller,
-            enemies=enemies
+            enemies=enemies,
         )
         result = simulation(environment=environment, controller=controller)
         gain = result['hp_player'] - result['hp_enemy']
@@ -100,11 +100,12 @@ if __name__ == "__main__":
                          filename=config_path)
     genome_save_name = "genome"
     run_save_name = "run"
-    total_generations = 50
-    run_multiple_experiments(
-        config=config,
-        group_number=1,
-        genome_save_name=genome_save_name,
-        n_experiments=1,
-        run_save_name=run_save_name,
-    )
+    total_generations = 200
+    for group_number in [1,2]:
+        run_multiple_experiments(
+            config=config,
+            group_number=group_number,
+            genome_save_name=genome_save_name,
+            n_experiments=10,
+            run_save_name=run_save_name,
+        )
