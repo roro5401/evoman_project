@@ -65,7 +65,7 @@ def create_offspring(mating_pool: list[GenomeDemoController], p_recombination: f
         parent_1 = mating_pool[j]
         parent_2 = mating_pool[j+1]
         if random.uniform(0, 1) < p_recombination:
-            offspring_1, offspring_2 = simple_arithmetic_recombination()
+            offspring_1, offspring_2 = simple_arithmetic_recombination(genome_1=parent_1, genome_2=parent_2)
         else:
             offspring_1 = copy.deepcopy(parent_1)
             offspring_2 = copy.deepcopy(parent_2)
@@ -95,7 +95,8 @@ def mating_tournament_selection(population: list[GenomeDemoController], lambda_v
         mating_pool.append(best_individual)
 
         current_member += 1
-
+    if len(mating_pool)%2 != 0:
+        mating_pool.pop(-1)
     return mating_pool
 
 
@@ -105,5 +106,5 @@ def survivor_selection(population: list[GenomeDemoController], mu: int, percenta
     best_half = population[:len(population)//2]
     worst_half = population[len(population)//2:]
     n_selected_best_half = round(mu * percentage_top_half)
-    n_selected_worst_half = len(population) - n_selected_best_half
+    n_selected_worst_half = mu - n_selected_best_half
     return [best_genome] + random.sample(population=best_half, k=n_selected_best_half) + random.sample(population=worst_half, k=n_selected_worst_half)
