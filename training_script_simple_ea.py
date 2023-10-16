@@ -67,11 +67,11 @@ def run_evolutionary_algorithm(n_generations: int, population_size: int, offspri
 
 
 if __name__ == "__main__":
-  for group_number in [1, 2]:
+  for group_number in [2, 1]:
         if group_number == 1:
             enemies = [1, 2, 3, 7]
         else:
-            enemies = [4, 5, 6, 8]
+            enemies = [5, 6, 8]
         n_generations = 100
         population_size = 200
         offspring_per_generation = 400
@@ -83,8 +83,8 @@ if __name__ == "__main__":
 
         for experiment in range(n_experiments):
             print(f"Running Experiment {experiment}")
-            default_genome_name = f"demo_genome_{experiment}"
-            default_result_name = f"demo_result_{experiment}"
+            default_genome_name = f"demo_genome_extra_{experiment}"
+            default_result_name = f"demo_result_extra_{experiment}"
             statistics, best_genome = run_evolutionary_algorithm(n_generations=n_generations, population_size=population_size, offspring_per_generation=offspring_per_generation, tournament_size=tournament_size, p_recombination=p_recombination, p_mutation=p_mutation, enemies=enemies)
             save_result(statistics=statistics, weights_and_biases=best_genome.get_weights_and_bias(), genome_save_name=default_genome_name, statistics_save_name=default_result_name, group_number=group_number)
 
