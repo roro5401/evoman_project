@@ -20,16 +20,16 @@ def save_result(statistics: dict, weights_and_biases: list, statistics_save_name
 
     with open(directory_results, "w+", newline='') as result_file:
         writer = csv.writer(result_file)
-        writer.writerow(["mean_gain", "max_gain"])
-        writer.writerows(zip(statistics["mean_gain"], statistics["max_gain"]))
+        writer.writerow(["mean_fitness", "max_fitness"])
+        writer.writerows(zip(statistics["mean_fitness"], statistics["max_fitness"]))
 
 
 def update_statistics(statistics: dict, population: list[GenomeDemoController], generation_number: int):
     best_genome = max(population)
     average_gain = sum(genome.get_fitness() for genome in population)/len(population)
-    statistics["mean_gain"].append(average_gain)
-    statistics["max_gain"].append(best_genome.get_fitness())
-    print(f"Finished Generation {generation_number}. \nBest genome this generation: {best_genome.get_fitness()}, average gain: {average_gain}. \n")
+    statistics["mean_fitness"].append(average_gain)
+    statistics["max_fitness"].append(best_genome.get_fitness())
+    print(f"Finished Generation {generation_number}. \nBest genome this generation: {best_genome.get_fitness()}, average fitness: {average_gain}. \n")
 
 
 def evaluate_genomes(genomes: list[GenomeDemoController], enemies: list):
@@ -43,12 +43,12 @@ def evaluate_genomes(genomes: list[GenomeDemoController], enemies: list):
     for genome in genomes:
         controller = genome.get_controller()
         result = simulation(environment=environment, controller=controller)
-        gain = result['hp_player'] - result['hp_enemy']
+        gain = result['fitness']
         genome.set_fitness(fitness=gain)
 
 
 def run_evolutionary_algorithm(n_generations: int, population_size: int, offspring_per_generation: int, tournament_size: int, p_recombination: float, p_mutation: float, enemies: list):
-    statistics = {"mean_gain": [], "max_gain": []}
+    statistics = {"mean_fitness": [], "max_fitness": []}
     population = [GenomeDemoController() for individual in range(population_size)]
     evaluate_genomes(genomes=population, enemies=enemies)
     update_statistics(statistics=statistics, population=population, generation_number=0)
@@ -83,8 +83,8 @@ if __name__ == "__main__":
 
         for experiment in range(n_experiments):
             print(f"Running Experiment {experiment}")
-            default_genome_name = f"demo_genome_extra_{experiment}"
-            default_result_name = f"demo_result_extra_{experiment}"
+            default_genome_name = f"demo_genome_extra_fitness_{experiment}"
+            default_result_name = f"demo_result_extra_fitness_{experiment}"
             statistics, best_genome = run_evolutionary_algorithm(n_generations=n_generations, population_size=population_size, offspring_per_generation=offspring_per_generation, tournament_size=tournament_size, p_recombination=p_recombination, p_mutation=p_mutation, enemies=enemies)
             save_result(statistics=statistics, weights_and_biases=best_genome.get_weights_and_bias(), genome_save_name=default_genome_name, statistics_save_name=default_result_name, group_number=group_number)
 
