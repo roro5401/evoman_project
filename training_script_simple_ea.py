@@ -14,14 +14,14 @@ def simulation(environment: Environment, controller: Controller) -> dict:
 def save_result(statistics: dict, weights_and_biases: list, statistics_save_name: str, genome_save_name: str, group_number: int):
     directory_genome = f"neat_experiment/best_generalist_genomes/group_{group_number}/{genome_save_name}.csv"
     directory_results = f"neat_experiment/results/generalist/group_{group_number}/training_results/{statistics_save_name}.csv"
-    with open(directory_genome, "wb") as save_file:
-        writer = csv.writer(save_file)
-        writer.writerow(weights_and_biases)
+    with open(directory_genome, "w") as save_file:
+        writer = csv.writer(save_file, delimiter=',')
+        writer.writerow([wb for wb in weights_and_biases])
 
     with open(directory_results, "w+", newline='') as result_file:
         writer = csv.writer(result_file)
-        writer.writerow(["mean_fitness", "max_fitness"])
-        writer.writerows(zip(statistics["mean_fitness"], statistics["max_fitness"]))
+        writer.writerow(["mean_gain", "max_gain"])
+        writer.writerows(zip(statistics["mean_gain"], statistics["max_gain"]))
 
 
 def update_statistics(statistics: dict, population: list[GenomeDemoController], generation_number: int):
@@ -51,7 +51,7 @@ def run_evolutionary_algorithm(n_generations: int, population_size: int, offspri
     statistics = {"mean_gain": [], "max_gain": []}
     population = [GenomeDemoController() for individual in range(population_size)]
     evaluate_genomes(genomes=population, enemies=enemies)
-    update_statistics(statistics=statistics, population=population)
+    update_statistics(statistics=statistics, population=population, generation_number=0)
 
     for generation in range(n_generations):
         mating_pool = mating_tournament_selection(population=population, lambda_value=offspring_per_generation, k=tournament_size)
@@ -59,7 +59,7 @@ def run_evolutionary_algorithm(n_generations: int, population_size: int, offspri
         population += offspring
         evaluate_genomes(genomes=population, enemies=enemies)
         population = survivor_selection(population=population, mu=population_size, percentage_top_half=0.8)
-        update_statistics(statistics=statistics, population=population)
+        update_statistics(statistics=statistics, population=population, generation_number=generation)
 
     best_genome = max(population)
 
@@ -67,22 +67,26 @@ def run_evolutionary_algorithm(n_generations: int, population_size: int, offspri
 
 
 if __name__ == "__main__":
-    enemies = [1, 2, 3, 7]
-    n_generations = 10
-    population_size = 10
-    offspring_per_generation = 5
-    tournament_size = 2
-    p_recombination = 0.8
-    p_mutation = 0.2
+  for group_number in [1, 2]:
+        if group_number == 1:
+            enemies = [1, 2, 3, 7]
+        else:
+            enemies = [4, 5, 6, 8]
+        n_generations = 100
+        population_size = 200
+        offspring_per_generation = 400
+        tournament_size = 8
+        p_recombination = 0.8
+        p_mutation = 0.5
 
-    n_experiments = 10
+        n_experiments = 10
 
-    for experiment in range(n_experiments):
-        print(f"Running Experiment {experiment}")
-        default_genome_name = f"genome_{experiment}"
-        default_result_name = f"result_{experiment}"
-        statistics, best_genome = run_evolutionary_algorithm(n_generations=10, population_size=population_size, offspring_per_generation=offspring_per_generation, tournament_size=tournament_size, p_recombination=p_recombination, p_mutation=p_mutation, enemies=enemies)
-        save_result(statistics=statistics, weights_and_biases=best_genome.get_weights_and_bias(), genome_save_name=default_genome_name, statistics_save_name=default_result_name)
+        for experiment in range(n_experiments):
+            print(f"Running Experiment {experiment}")
+            default_genome_name = f"demo_genome_{experiment}"
+            default_result_name = f"demo_result_{experiment}"
+            statistics, best_genome = run_evolutionary_algorithm(n_generations=n_generations, population_size=population_size, offspring_per_generation=offspring_per_generation, tournament_size=tournament_size, p_recombination=p_recombination, p_mutation=p_mutation, enemies=enemies)
+            save_result(statistics=statistics, weights_and_biases=best_genome.get_weights_and_bias(), genome_save_name=default_genome_name, statistics_save_name=default_result_name, group_number=group_number)
 
 
 
