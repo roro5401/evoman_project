@@ -31,17 +31,17 @@ def evaluate_genomes(genomes: list, config: neat.Config):
             enemies=enemies,
         )
         result = simulation(environment=environment, controller=controller)
-        gain = result['hp_player'] - result['hp_enemy']
+        gain = result['fitness']
         genome.fitness = gain
         fitness_scores.append(gain)
 
-    statistics["mean_gain"].append(sum(fitness_scores) / len(fitness_scores))
-    statistics["max_gain"].append(max(fitness_scores))
+    statistics["mean_fitness"].append(sum(fitness_scores) / len(fitness_scores))
+    statistics["max_fitness"].append(max(fitness_scores))
 
 
 def run_neat(config: neat.Config, save_path: str) -> dict:
     global statistics
-    statistics = {"mean_gain": [], "max_gain": []}
+    statistics = {"mean_fitness": [], "max_fitness": []}
     population = neat.Population(config=config)
     population.add_reporter(reporter=neat.StdOutReporter(True))
     population.add_reporter(reporter=neat.StatisticsReporter())
@@ -83,8 +83,8 @@ def run_multiple_experiments(
                 results_directory + f"{run_save_name}_{experiment}.csv",
                 "w+", newline='') as result_file:
             writer = csv.writer(result_file)
-            writer.writerow(["mean_gain", "max_gain"])
-            writer.writerows(zip(stats["mean_gain"], stats["max_gain"]))
+            writer.writerow(["mean_fitness", "max_fitness"])
+            writer.writerows(zip(stats["mean_fitness"], stats["max_fitness"]))
 
 
 if __name__ == "__main__":
@@ -98,8 +98,8 @@ if __name__ == "__main__":
                          species_set_type=neat.DefaultSpeciesSet,
                          stagnation_type=neat.DefaultStagnation,
                          filename=config_path)
-    genome_save_name = "genome"
-    run_save_name = "run"
+    genome_save_name = "genome_fitness"
+    run_save_name = "run_fitness"
     total_generations = 200
     for group_number in [1,2]:
         run_multiple_experiments(
