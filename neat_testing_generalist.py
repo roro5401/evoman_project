@@ -8,7 +8,7 @@ from evoman.controller import Controller
 
 
 def save_result_generalist(results: dict, group_number: str, csv_name: str, enemies: list):
-    with open(f"neat_experiment/results/generalist/testing_results/{group_number}/{csv_name}.csv", "w+") as result_file:
+    with open(f"neat_experiment/results/generalist/group_{group_number}/testing_results/{csv_name}.csv", "w+") as result_file:
         writer = csv.writer(result_file)
         headers = ["controller_name"]+ [f"enemy_{enemy}" for enemy in enemies]
         writer.writerow(headers)
@@ -45,9 +45,7 @@ def test_controller(
                 savelogs="no",
                 multiplemode="no",
                 player_controller=controller,
-                enemies=[enemy],
-                visuals="yes",
-                speed="normal"
+                enemies=[enemy]
             )
             result_run = one_simulation(environment=environment, controller=controller)
             gain = result_run['hp_player']-result_run['hp_enemy']
@@ -68,24 +66,25 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
                          filename=config_path)
     result = {}
     for genome_file in os.listdir(folder_path):
-        print(f"\nTesting for genome {genome_file} started...\n"
-              f"---------------------------------------------------------")
-        genome = load_genome(load_path=os.path.join(folder_path, genome_file))
-        controller = NeatRNNController(genome=genome, config=config)
+        if 'pkl' in genome_file:
+            print(f"\nTesting for genome {genome_file} started...\n"
+                f"---------------------------------------------------------")
+            genome = load_genome(load_path=os.path.join(folder_path, genome_file))
+            controller = NeatRNNController(genome=genome, config=config)
 
-        controller_result = test_controller(
-            enemies=enemies, controller=controller, n_simulations=n_simulations
-        )
-        result[genome_file] = controller_result
+            controller_result = test_controller(
+                enemies=enemies, controller=controller, n_simulations=n_simulations
+            )
+            result[genome_file] = controller_result
     return result
 
 
 if __name__ == "__main__":
-    enemies=[1, 2, 3, 7]
+    enemies=[5, 6, 8]
     result = test_folder_of_neat_controllers(
-        folder_path=f"neat_experiment/best_generalist_genomes/group_1/",
+        folder_path=f"neat_experiment/best_generalist_genomes/group_2/",
         enemies=enemies,
         n_simulations=5,
         config_file="basic-config.txt",
     )
-    save_result_generalist(result=result, group_number=1, csv_name="test", enemies=enemies)
+    save_result_generalist(results=result, group_number=2, csv_name="test", enemies=enemies)

@@ -71,7 +71,7 @@ def run_multiple_experiments(
     if group_number == 1:
         enemies = [1, 2, 3, 7]
     elif group_number == 2:
-        enemies = [4, 5, 6, 8]
+        enemies = [5, 6, 8]
     else:
         raise ValueError(f"Invalid group number. Should be 1 or 2 but you provided {group_number}.")
 
@@ -100,8 +100,8 @@ if __name__ == "__main__":
                          filename=config_path)
     genome_save_name = "genome"
     run_save_name = "run"
-    total_generations = 200
-    for group_number in [1,2]:
+    total_generations = 100
+    for group_number in [2]:
         run_multiple_experiments(
             config=config,
             group_number=group_number,
