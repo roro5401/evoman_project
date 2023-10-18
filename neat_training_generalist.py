@@ -98,8 +98,13 @@ if __name__ == "__main__":
                          species_set_type=neat.DefaultSpeciesSet,
                          stagnation_type=neat.DefaultStagnation,
                          filename=config_path)
+<<<<<<< Updated upstream
     genome_save_name = "genome"
     run_save_name = "run"
+=======
+    genome_save_name = "genome_fitness"
+    run_save_name = "run_fitness"
+>>>>>>> Stashed changes
     total_generations = 100
     for group_number in [2]:
         run_multiple_experiments(

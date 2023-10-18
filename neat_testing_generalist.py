@@ -7,8 +7,13 @@ from evoman.environment import Environment
 from evoman.controller import Controller
 
 
+<<<<<<< Updated upstream
 def save_result_generalist(results: dict, group_number: str, csv_name: str, enemies: list):
     with open(f"neat_experiment/results/generalist/group_{group_number}/testing_results/{csv_name}.csv", "w+") as result_file:
+=======
+def save_result_generalist(results: dict, group_number: str, csv_name: str, n_runs: int):
+    with open(f"neat_experiment/results/generalist/group_{group_number}/testing_results/neat/fitness/neat_{csv_name}.csv", "w+") as result_file:
+>>>>>>> Stashed changes
         writer = csv.writer(result_file)
         headers = ["controller_name"]+ [f"enemy_{enemy}" for enemy in enemies]
         writer.writerow(headers)
@@ -73,18 +78,23 @@ def test_folder_of_neat_controllers(folder_path: str, enemies: list, config_file
             controller = NeatRNNController(genome=genome, config=config)
 
             controller_result = test_controller(
+<<<<<<< Updated upstream
                 enemies=enemies, controller=controller, n_simulations=n_simulations
             )
             result[genome_file] = controller_result
+=======
+            enemies=enemies, controller=controller, n_simulations=n_simulations)
+            save_result_generalist(results=controller_result, group_number=2, csv_name=genome_file.split(".")[0], n_runs=n_simulations)
+>>>>>>> Stashed changes
     return result
 
 
 if __name__ == "__main__":
     enemies=[5, 6, 8]
     result = test_folder_of_neat_controllers(
-        folder_path=f"neat_experiment/best_generalist_genomes/group_2/",
+        folder_path=f"neat_experiment/best_generalist_genomes/group_2/neat/fitness",
         enemies=enemies,
         n_simulations=5,
         config_file="basic-config.txt",
     )
-    save_result_generalist(results=result, group_number=2, csv_name="test", enemies=enemies)
+    #save_result_generalist(results=result, group_number=2, csv_name="test", enemies=enemies)
